@@ -1,0 +1,27 @@
+CREATE TABLE `boletines_calificacion` (
+  `ID` int(6) NOT NULL,
+  `Tipo` int(2) NOT NULL,
+  `Fecha` date NOT NULL,
+  `Periodo` varchar(50) NOT NULL,
+  `ID_Autor` int(5) NOT NULL,
+  `ID_Ciclo_Lectivo` int(4) NOT NULL,
+  `ID_Nivel` int(1) NOT NULL,
+  `Texto_Adicional` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `boletines_calificacion`
+  ADD PRIMARY KEY (`ID`);
+
+ALTER TABLE `boletines_calificacion`
+  MODIFY `ID` int(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+COMMIT;
+
+INSERT INTO `boletines_calificacion` (`ID`, `Tipo`, `Fecha`, `Periodo`, `ID_Autor`, `ID_Ciclo_Lectivo`, `ID_Nivel`, `Texto_Adicional`) VALUES
+(1, 1, '2020-10-25', 'Ciclo 2020', 19, 7, 2, 'Boletín de Calificaciones Oficial 2020'),
+(2, 2, '2020-10-15', 'Registro de Trayectoria 2020', 19, 7, 2, 'Registro de Trayectoria 2020');
+
+ALTER TABLE `envio_cuotas` ADD `Visible` INT(1) NOT NULL DEFAULT '1' AFTER `Tipo`;
+
+ALTER TABLE `boletines_detalle` ADD `Archivo` TEXT NOT NULL AFTER `Envio
+
+INSERT INTO `boletines_detalle` (`ID`, `ID_Boletin`, `Tipo_Envio`, `ID_Destinatario`, `ID_Alumno`, `Aleatorio`, `Leido`, `Fecha_Leido`, `Hora_Leido`, `MailD`, `Acceso`, `Fecha_Acceso`, `Hora_Acceso`, `Tipo`, `Envio`, `Archivo`) VALUES (NULL, '1', '4', '1', '1', 'gsju865TYH45', '0', '', '', 'diegojaviermendoza@yahoo.com', '0', '', '', 'F', '1', 'boletin_modelo.pdf'), (NULL, '2', '4', '1', '1', 'pouu7654assd75', '0', '', '', 'diegojaviermendoza@yahoo.com', '0', '', '', 'F', '1', 'registro_modelo.php');

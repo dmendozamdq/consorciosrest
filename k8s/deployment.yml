@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pesgerest-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pesgerest-api-container
+  template:
+    metadata:
+      labels:
+        app: pesgerest-api-container
+    spec:
+      imagePullSecrets:
+        - name: registry-credentials
+      containers:
+        - name: pesgerest-api
+          image: $IMAGE
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_port
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_host
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_password
+            - name: DB_PORT_SECOND
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_port_second
+            - name: DB_HOST_SECOND
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_host_second
+            - name: DB_DATABASE_SECOND
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_database_second
+            - name: DB_USERNAME_SECOND
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_username_second
+            - name: DB_PASSWORD_SECOND
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_password_second
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: jwt_secret
+          envFrom:
+            - configMapRef:
+                name: laravel-config

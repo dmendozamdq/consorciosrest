@@ -1,0 +1,336 @@
+********************************************************************************
+Esta es una api desarrollada para PESGE llamada PesgeRest.
+Se encuentra desarrollada en Larevel 7: https://laravel.com/
+
+Si bien Laravel utiliza el patron de diseño MVC se agregan 
+Servicio y Repositorios para que no dejar muy cargado el controlador de logica.
+********************************************************************************
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+********************************************************************************
+Estructura de desarrollo:
+
+Route => Controller => Service => Repository => Model
+
+
+- Ruta (api.php): Donde se declaran los endpints de la API, ejemplo:
+Para traer todos los usuarios una ruta seria api/usuarios
+
+Route::get('usuarios', 'UsuariosController@index');
+
+
+- Controller (UsuariosController.php): Controlador donde se realizan validaciones
+de datos escenciales y toma re datos.
+
+
+- Service (UsuariosServicios.php): Para no dejar el controlador muy cargado de codigo
+se realizan servicios mediante inyeccion de dependencias para poder distribuir
+equitativamente el codigo en el sistema. El servicio llevara la logica del sistema.
+
+
+- Repository (UsuariosRepository.php): Los repositorios los vamos a usar para realizar
+las consultas a la base de datos ya sea por medio de eloquent (ORM de Laravel) o bien
+utilizando consultas nativas de MySQL
+
+
+- Model (Usuario.php): Lo modelos representan la tabla a la que le vamos a pegar
+con nuestro repositorio, no es necesario que se llame igual que la misma ya que
+hay que especificarla dentro del mismo.
+
+********************************************************************************
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+********************************************************************************
+Correr el proyecto:
+1)
+
+PRIMERO REALIZAR UN COMPOSER UPDATE EN LA RAIZ DEL PROYECTO:
+
+"composer update"
+
+DESPUES:
+
+generar un archivo .env en la raiz del proyecto con los siguentes datos:
+
+.ENV:
+
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:EEZ0jZqmwvdmPVgnHjxwY5nPMv5yKAeNHQbz2eJ0wV8=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=dmendoza_pe_test
+DB_USERNAME=root
+DB_PASSWORD=
+
+DB_CONNECTION_SECOND=mysql
+DB_HOST_SECOND=127.0.0.1
+DB_PORT_SECOND=3306
+DB_DATABASE_SECOND=dmendoza_pe_demo
+DB_USERNAME_SECOND=root
+DB_PASSWORD_SECOND=
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=null
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_CLUSTER=mt1
+
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+JWT_SECRET=71lSBVxqpZjIkGeDaZ5925swFMiLKvCSmib5yXA7GotEq0nkBqhcV4frXccEPjOc
+
+*FIN DEL .ENV
+
+
+2)
+//REEMPLAZAR EN EL VENDOR
+
+/**************************************************************************/
+De la carpeta vendorEdit reemplazar los siguentes archivos en las siguentes rutas
+(Esto pasa porque la libreria JWT para la autenticacion del login utiliza password
+como parametro de hash y en la base de datos esta "Contrasenia")
+
+
+/**************************************************************************/
+EloquentUserProvider.php
+DatabaseUserProvider.php
+
+en
+
+PesgeRest\vendor\laravel\framework\src\Illuminate\Auth
+/**************************************************************************/
+
+y
+
+/**************************************************************************/
+PasswordBroker.php
+
+en
+
+C:\xampp\htdocs\PesgeRest\vendor\laravel\framework\src\Illuminate\Auth\Passwords
+/**************************************************************************/
+********************************************************************************
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+********************************************************************************
+Correr el comando (Dentro del directorio raiz):
+
+php artisan serve
+
+********************************************************************************
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+********************************************************************************
+EndPoints:
+
+-------------------------------------------
+Usuarios:
+
+http://127.0.0.1:8000/api/usuarios
+http://127.0.0.1:8000/api/usuario/{ID_Usuario}
+
+-------------------------------------------
+Login:
+
+http://127.0.0.1:8000/api/user/login?Email=hnehuen@gmail.com&Contrasenia=asd123asd123
+
+
+Reset Token:
+
+http://127.0.0.1:8000/api/user/tokenRefresh?Email=hnehuen@gmail.com&Contrasenia=asd123asd123
+-------------------------------------------
+Informe Completo:
+(El parametro seria el id del alumno)
+
+
+http://127.0.0.1:8000/api/informes/general/{ID_Alumno}
+-------------------------------------------
+
+********************************************************************************
+
+
+/********************************************************************************/
+Para Docker:
+
+1) - docker build -t pesgerest_api .
+
+2) - docker-compose up -d
+
+
+##################################
+## DE ACA PARA ABAJO DESESTIMAR ##
+##################################
+
+1)
+#composer update
+
+2)
+#crear .env para PRODUCCION
+
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:DcXK2p4WEkQZcmp1U0DxzfZIejfCuS7pg8a8NAoNuG0=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+
+DB_CONNECTION=mysql
+DB_HOST=200.58.102.122
+DB_PORT=3306
+DB_DATABASE=dmendoza_pr_el_gral
+DB_USERNAME=dmendoza_hermida
+DB_PASSWORD=Lucas2020
+
+DB_CONNECTION_SECOND=mysql
+DB_HOST_SECOND=200.58.102.122
+DB_PORT_SECOND=3306
+DB_DATABASE_SECOND=dmendoza_pesge_sarmiento
+DB_USERNAME_SECOND=dmendoza_hermida
+DB_PASSWORD_SECOND=Lucas2020
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=null
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_CLUSTER=mt1
+
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+JWT_SECRET=71lSBVxqpZjIkGeDaZ5925swFMiLKvCSmib5yXA7GotEq0nkBqhcV4frXccEPjOc
+
+
+3)
+Copiar archivos
+
+EloquentUserProvider.php
+DatabaseUserProvider.php
+
+y pegarlos en:
+
+PesgeRest\vendor\laravel\framework\src\Illuminate\Auth
+
+
+Copiar 
+
+PasswordBroker.php
+
+y pegar en:
+
+C:\xampp\htdocs\PesgeRest\vendor\laravel\framework\src\Illuminate\Auth\Passwords
+
+
+(El paso 3 debe realiarse cada vez que se realice un composer update)
+
+
+
+4)
+chmod 775 /var/www
+
+chmod 777 /var/www/storage
+
+php artisan key:generate
+
+php artisan config:cache
+
+chmod -R 777 /var/www/.env
+
+/********************************************************************************/
+
+
+
+/********************************************************************************/
+
+//Docker actualizaciones
+
+para actualizar el codigo solo vamos a hacer esto:
+
+(una vez subidos los cambios)
+
+
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+
+
+/***********************************************************/
+Docker LOCAL:
+
+Instalar: docker build -t pesgerest_api .
+
+Correr: docker-compose up 
+
+
+/***********************************************************/

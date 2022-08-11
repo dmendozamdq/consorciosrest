@@ -1,0 +1,135 @@
+{
+	"info": {
+		"_postman_id": "6b751b31-2a3d-44c3-a5e1-49b7884d37b7",
+		"name": "PesgeRest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "usuarios",
+			"item": [
+				{
+					"name": "usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/api/usuarios",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/api/usuario/3222",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"api",
+								"usuario",
+								"3222"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/api/user/login?Email=hnehuen@gmail.com&Contrasenia=asd123asd123&DeviceID=android-3628136712836718dsabhdsa",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							],
+							"query": [
+								{
+									"key": "Email",
+									"value": "hnehuen@gmail.com"
+								},
+								{
+									"key": "Contrasenia",
+									"value": "asd123asd123"
+								},
+								{
+									"key": "DeviceID",
+									"value": "android-3628136712836718dsabhdsa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/api/user/tokenRefresh?Email=hnehuen@gmail.com&Contrasenia=asd123asd123",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"tokenRefresh"
+							],
+							"query": [
+								{
+									"key": "Email",
+									"value": "hnehuen@gmail.com"
+								},
+								{
+									"key": "Contrasenia",
+									"value": "asd123asd123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "informes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/api/informes/general/1",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"api",
+								"informes",
+								"general",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
