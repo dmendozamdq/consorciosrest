@@ -14,11 +14,10 @@ class ConsorciosService
         $this->ConsorciosRep = $ConsorciosRep;
     }
 
-    public function ver_edicicios($id)
+    public function ver_edificios($id)
     {
         try {
 
-            return $this->ConsorciosRep->ver_edicicios($id);
 
         } catch (Exception $e) {
 
