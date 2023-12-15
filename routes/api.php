@@ -433,6 +433,14 @@ Route::get('deudores/parametros_plan/{id}', 'DeudoresController@parametros_plan'
 //DATOS ADMINISTRACION
 Route::get('home/administracion/{id}', 'HomeController@administracion');
 
+//CONSORCIOS
+
+Route::get('consorcios/ver_edificios/{id}', 'ConsorciosController@ver_edificios');
+
+Route::get('consorcios/ver_unidades/{id}', 'ConsorciosController@ver_unidades');
+
+Route::get('consorcios/ver_unidad/{id}', 'ConsorciosController@ver_unidad');
+
 
 
 
