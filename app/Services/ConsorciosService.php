@@ -18,6 +18,7 @@ class ConsorciosService
     {
         try {
 
+            return $this->ConsorciosRep->ver_edificios($id);
 
         } catch (Exception $e) {
 
