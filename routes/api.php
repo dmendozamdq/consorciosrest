@@ -52,8 +52,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 
-    //DATOS ADMINISTRACION
-    Route::get('home/administracion/{id}', 'HomeController@administracion');
+    
 
 
     //Ruteo de Comunicados
@@ -429,6 +428,15 @@ Route::put('deudores/borrar_plan/{id}', 'DeudoresController@borrar_plan');
 Route::get('deudores/parametros_plan/{id}', 'DeudoresController@parametros_plan');
 
 });
+
+
+//DATOS ADMINISTRACION
+Route::get('home/administracion/{id}', 'HomeController@administracion');
+
+
+
+
+
 
 
 Route::get('usuarios', 'UsuariosController@index'); //NO PONER ID_INSTITUCION
