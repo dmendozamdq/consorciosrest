@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+use App\Services\DataBaseService;
 
 use App\Models\Alumno;
 
@@ -9,32 +10,34 @@ class RiteRepository
 
     private $Alumno;
     protected $connection = 'mysql2';
+    private $dataBaseService;
 
-    function __construct(Alumno $Alumno)
+    function __construct(Alumno $Alumno, DataBaseService $dataBaseService)
     {
         $this->Alumno = $Alumno;
+        $this->dataBaseService = $dataBaseService;
     }
 
-    public function lectura_rite($id)
+    public function lectura_rite($id, $id_institucion)
     {
       date_default_timezone_set('America/Argentina/Buenos_Aires');
       $FechaActual=date("Y-m-d");
       $HoraActual=date("H:i:s");
-      $lectura = \DB::connection('mysql2')->update("
+      $lectura = $this->dataBaseService->selectConexion($id_institucion)->update("
                       UPDATE boletines_detalle
                       SET Leido=1,Fecha_Leido='{$FechaActual}',Hora_Leido='{$HoraActual}',Acceso=1,Fecha_Acceso='{$FechaActual}',Hora_Acceso='{$HoraActual}'
                       WHERE ID={$id}
                   ");
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
 
         try {
 /*****************************************************************************************************/
 //Obtengo el nombre de la carpeta
 
-                      $carpeta = \DB::connection('mysql2')->select("
+                      $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT i.Carpeta
                                       FROM institucion i
                                       ORDER BY i.ID
@@ -42,7 +45,7 @@ class RiteRepository
 
 //Obtengo el inicio y fin del ciclo lectivo
 
-                      $periodos = \DB::connection('mysql2')->select("
+                      $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
                                       FROM alumnos a
                                       INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -67,7 +70,7 @@ class RiteRepository
 
                 //CONSULTO COMUNICADOS
 
-                $boletines= \DB::connection('mysql2')->select("
+                $boletines= $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT bd.ID, rt.Titulo, rt.Descripcion, bd.Leido, bd.ID_Boletin
                                 FROM boletines_detalle bd
                                 INNER JOIN alumnos a ON bd.ID_Destinatario=a.ID

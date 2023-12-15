@@ -3,19 +3,22 @@
 namespace App\Repositories;
 
 use App\Models\Alumno;
+use App\Services\DataBaseService;
 
 class AgendaRepository
 {
 
     private $Alumno;
     protected $connection = 'mysql2';
+    private $dataBaseService;
 
-    function __construct(Alumno $Alumno)
+    function __construct(Alumno $Alumno, DataBaseService $dataBaseService)
     {
         $this->Alumno = $Alumno;
+        $this->dataBaseService = $dataBaseService;
     }
 
-    public function general($id)
+    public function general($id, $id_institucion)
     {
 
         try {
@@ -25,7 +28,7 @@ class AgendaRepository
 
 //Obtengo el inicio y fin del ciclo lectivo
 
-                      $periodos = \DB::connection('mysql2')->select("
+                      $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FPT
                                       FROM alumnos a
                                       INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -46,7 +49,7 @@ class AgendaRepository
             //for ($i=0; $i < count($periodos); $i++) {
 
                 //CONSULTO EL LOS EVENTOS PROXIMOS
-                $eventos = \DB::connection('mysql2')->select("
+                $eventos = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT ac.ID, ac.Fecha_R, ac.Hora_Inicio, ac.Campo_1, ac.Campo_2, ac.Campo_3, m.Materia, cur.Cursos, pf.Apellido, accp.Aleatorio
                                 FROM agenda_comun ac
                                 INNER JOIN cursos cur ON ac.ID_Curso=cur.ID

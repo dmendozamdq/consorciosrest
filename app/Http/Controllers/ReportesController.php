@@ -21,7 +21,7 @@ class ReportesController extends Controller
     {
         $data = $request->all();
 
-        $response = $this->ReportesService->lista_informes($id, $data['email']);
+        $response = $this->ReportesService->lista_informes($id, $data['email'], $data['id_institucion']);
 
         return response()->json([
            'success' => true,
@@ -40,7 +40,7 @@ class ReportesController extends Controller
           //return $this->ReportesService->general($id);
           $data = $request->all();
 
-          $informe = $this->ReportesService->lectura_informe($id, $data['email']);
+          $informe = $this->ReportesService->lectura_informe($id, $data['email'], $data['id_institucion']);
 
 
           return response()->json([
@@ -52,11 +52,13 @@ class ReportesController extends Controller
           ]);
       }
 
-    public function general($id)
+    public function general($id, Request $request)
     {
         //return $this->ReportesService->general($id);
 
-        $informe = $this->ReportesService->general($id);
+        $data = $request->all();
+
+        $informe = $this->ReportesService->general($id, $data['id_institucion']);
 
         return response()->json([
             'success' => true,

@@ -26,7 +26,7 @@ class Usuario extends Model implements JWTSubject, Authenticatable, CanResetPass
      *
      * @var string
      */
-    protected $table = 'reg_familiar';
+    protected $table = 'users';
 
     /**
      * Clave primaria asociada a la tabla.
@@ -49,19 +49,29 @@ class Usuario extends Model implements JWTSubject, Authenticatable, CanResetPass
      *
      * @var array
      */
+    /*
     protected $fillable = [
         'Email', 'Contrasenia',
     ];
-
+*/protected $fillable = [
+    'name',
+    'email',
+    'password',
+];
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
     protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+    /*
+    protected $hidden = [
         'Contrasenia'
     ];
-
+*/
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -110,7 +120,8 @@ class Usuario extends Model implements JWTSubject, Authenticatable, CanResetPass
      */
     public function getAuthPassword()
     {
-        return $this->Contrasenia;
+        //return $this->Contrasenia;
+        return $this->password;
     }
 
     /**

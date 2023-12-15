@@ -14,11 +14,11 @@ class AgendaService
         $this->AgendaRep = $AgendaRep;
     }
 
-    public function general($id)
+    public function general($id, $id_institucion)
     {
         try {
 
-            return $this->AgendaRep->general($id);
+            return $this->AgendaRep->general($id, $id_institucion);
 
         } catch (Exception $e) {
 

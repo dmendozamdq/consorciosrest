@@ -14,11 +14,11 @@ class ComunicadosService
         $this->ComunicadosRep = $ComunicadosRep;
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail,$id_institucion)
     {
         try {
 
-            return $this->ComunicadosRep->general($id,$mail);
+            return $this->ComunicadosRep->general($id,$mail,$id_institucion);
 
         } catch (Exception $e) {
 
@@ -36,37 +36,15 @@ class ComunicadosService
         }
     }
 
-    public function lectura_comunicado($id,$tipo,$mail)
+    public function lectura_comunicado($id,$tipo,$mail,$id_institucion)
     {
         try {
 
-            return $this->ComunicadosRep->lectura_comunicado($id,$tipo,$mail);
+            return $this->ComunicadosRep->lectura_comunicado($id,$tipo,$mail,$id_institucion);
 
         } catch (Exception $e) {
 
         }
-    }
-
-
-    public function show($id)
-    {
-
-    }
-
-    public function store($data)
-    {
-
-    }
-
-    public function destroy($id)
-    {
-
-    }
-
-
-    public function update($data, $id)
-    {
-
     }
 
 

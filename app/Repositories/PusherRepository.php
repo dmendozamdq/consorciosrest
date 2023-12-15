@@ -112,9 +112,14 @@ class PusherRepository
             curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
 
             $response = curl_exec($ch);
-            dd($response);
 
-            return $response;
+            $json = json_decode($response, true);
+
+            //$json =  ksort($json);
+
+            //dd($json);
+
+            return $json;
 
 
           //CIERRA TRY

@@ -14,33 +14,33 @@ class ReportesService
         $this->ReportesRep = $ReportesRep;
     }
 
-    public function general($id)
+    public function general($id, $id_institucion)
     {
         try {
 
-            return $this->ReportesRep->general($id);
+            return $this->ReportesRep->general($id, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function lectura_informe($id,$mail)
+    public function lectura_informe($id,$mail, $id_institucion)
     {
         try {
 
-            return $this->ReportesRep->lectura_informe($id,$mail);
+            return $this->ReportesRep->lectura_informe($id,$mail, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function lista_informes($id,$mail)
+    public function lista_informes($id,$mail, $id_institucion)
     {
         try {
 
-            return $this->ReportesRep->lista_informes($id,$mail);
+            return $this->ReportesRep->lista_informes($id,$mail, $id_institucion);
 
         } catch (Exception $e) {
 

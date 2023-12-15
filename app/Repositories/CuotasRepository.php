@@ -3,38 +3,41 @@
 namespace App\Repositories;
 
 use App\Models\Alumno;
+use App\Services\DataBaseService;
 
 class CuotasRepository
 {
 
     private $Alumno;
     protected $connection = 'mysql2';
+    private $dataBaseService;
 
-    function __construct(Alumno $Alumno)
+    function __construct(Alumno $Alumno, DataBaseService $dataBaseService)
     {
         $this->Alumno = $Alumno;
+        $this->dataBaseService = $dataBaseService;
     }
 
-    public function lectura_cuotas($id)
+    public function lectura_cuotas($id, $id_institucion)
     {
       date_default_timezone_set('America/Argentina/Buenos_Aires');
       $FechaActual=date("Y-m-d");
       $HoraActual=date("H:i:s");
-      $lectura = \DB::connection('mysql2')->update("
+      $lectura = $this->dataBaseService->selectConexion($id_institucion)->update("
                       UPDATE envio_cuotas_detalle
                       SET Leido=1,Fecha_Leido='{$FechaActual}',Hora_Leido='{$HoraActual}'
                       WHERE ID={$id}
                   ");
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
 
         try {
 /*****************************************************************************************************/
 //Obtengo el nombre de la carpeta
 
-                      $carpeta = \DB::connection('mysql2')->select("
+                      $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT i.Carpeta
                                       FROM institucion i
                                       ORDER BY i.ID
@@ -42,7 +45,7 @@ class CuotasRepository
 
 //Obtengo el inicio y fin del ciclo lectivo
 
-                      $periodos = \DB::connection('mysql2')->select("
+                      $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
                                       FROM alumnos a
                                       INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -67,7 +70,7 @@ class CuotasRepository
 
                 //CONSULTO COMUNICADOS
 
-                $cuotas= \DB::connection('mysql2')->select("
+                $cuotas= $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT ce.ID, c.Fecha, c.Titulo, c.Mensaje, ce.Cuota, ce.Leido
                                 FROM envio_cuotas_detalle ce
                                 INNER JOIN alumnos a ON ce.ID_Destinatario=a.ID

@@ -24,25 +24,96 @@ class Medios_PagoController extends Controller
      * @return Json Response [success, data, messages]
      */
      
-    public function agregar_medio_pago($nombre)
+    public function agregar_medio_pago($id, Request $request)
     {
 
-        //$data = $request->all();
-        return $this->Medios_PagoService->agregar_medio_pago($nombre);
+        $data = $request->all();
+        $response = $this->Medios_PagoService->agregar_medio_pago($id, $data['nombre']);
+        //return $this->Medios_PagoService->agregar_medio_pago($nombre);
+        return response()->json([
+            'success' => true,
+            'data'    => mb_convert_encoding($response, 'UTF-8', 'UTF-8'),
+            'messages' => ''
+        ]);
+
 
     }
 
-    public function borrar_medio_pago($id)
+    
+    public function modificar_medio_pago($id, Request $request)
     {
-        //return $this->ReportesService->general($id);
-
-        $informe = $this->Medios_PagoService->borrar_medio_pago($id);
+        $data = $request->all();
+        $informe = $this->Medios_PagoService->modificar_medio_pago($id,  $data['nombre'],$data['estado'],$data['id']);
 
         return response()->json([
             'success' => true,
             'data'    => $informe,
             'messages' => ''
         ]);
+    }
+
+    public function activar_medio_pago($id, Request $request)
+    {
+        $data = $request->all();
+
+        $informe = $this->Medios_PagoService->activar_medio_pago($id, $data['id']);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
+    }
+
+    public function desactivar_medio_pago($id, Request $request)
+    {
+        $data = $request->all();
+        $informe = $this->Medios_PagoService->desactivar_medio_pago($id, $data['id']);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
+    }
+
+    public function borrar_medio_pago($id, Request $request)
+    {
+        $data = $request->all();
+        $informe = $this->Medios_PagoService->borrar_medio_pago($id, $data['id']);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
+    }
+
+    
+    public function mostrar_medio_pago($id)
+    {
+        //$data = $request->all();       
+        $informe = $this->Medios_PagoService->mostrar_medio_pago($id);
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
+        
+    }
+    
+    public function ver_medio_pago($id, Request $request)
+    {
+        $data = $request->all();  
+        $informe = $this->Medios_PagoService->ver_medio_pago($id, $data['id']);
+        
+        
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
+        //return $this->Medios_PagoService->mostrar_medio_pago($data);
     }
 
     /**

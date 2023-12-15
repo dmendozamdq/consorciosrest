@@ -22,11 +22,13 @@ class AgendaController extends Controller
      *
      * @return Json Response [success, data, messages]
      */
-    public function general($id)
+    public function general($id, Request $request)
     {
         //return $this->ReportesService->general($id);
 
-        $informe = $this->AgendaService->general($id);
+        $data = $request->all();
+
+        $informe = $this->AgendaService->general($id, $data['id_institucion']);
 
         return response()->json([
             'success' => true,

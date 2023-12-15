@@ -28,7 +28,10 @@ class ComunicadosController extends Controller
      {
          $data = $request->all();
 
-         $response = $this->ComunicadosService->general($id, $data['email']);
+         //$response = $this->ComunicadosService->general($id, $data['email']);
+         $response = $this->ComunicadosService->general($id, $data['email'], $data['id_institucion']);
+         //$response = $this->ComunicadosService->general($id, $data['email'], 11);
+
 
          return response()->json([
             'success' => true,
@@ -67,7 +70,9 @@ class ComunicadosController extends Controller
         //return $this->ReportesService->general($id);
         $data = $request->all();
 
-        $informe = $this->ComunicadosService->lectura_comunicado($id, $data['tipo'],  $data['email']);
+        //$informe = $this->ComunicadosService->lectura_comunicado($id, $data['tipo'],  $data['email']);
+        $informe = $this->ComunicadosService->lectura_comunicado($id, $data['tipo'],  $data['email'],  $data['id_institucion']);
+        //$informe = $this->ComunicadosService->lectura_comunicado($id, $data['tipo'],  $data['email'],  11);
 
 
         return response()->json([
@@ -80,12 +85,14 @@ class ComunicadosController extends Controller
     }
 
 
-public function lectura_comunicado_a($id)
+public function lectura_comunicado_a($id, Request $request)
 {
     //return $this->ReportesService->general($id);
 
+    $data = $request->all();
 
-    $informe = $this->ComunicadosService->lectura_comunicado_a($id);
+
+    $informe = $this->ComunicadosService->lectura_comunicado_a($id, $data['id_institucion']);
 
 
     return response()->json([
@@ -96,69 +103,5 @@ public function lectura_comunicado_a($id)
 }
 
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Insert de Reportes
-     *
-     * @param  Request  $request
-     * @return Json Response [success, data, messages]
-     */
-    public function store(Request $request)
-    {
-
-    }
-
-    /**
-     * Select de Reportes
-     *
-     * @param  $id
-     * @return Json Response [success, data, messages]
-     */
-    public function show($id)
-    {
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update de Reportes
-     *
-     * @param  Request  $request, $id
-     * @return Json Response [success, data, messages]
-     */
-    public function update(Request $request, $id)
-    {
-
-    }
-
-    /**
-     * Delete de Reportes
-     *
-     * @param  $id
-     * @return Json Response [success, data, messages]
-     */
-    public function destroy($id)
-    {
-
-    }
 
 }

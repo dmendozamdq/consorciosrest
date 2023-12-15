@@ -71,6 +71,111 @@ spec:
                 secretKeyRef:
                   name: laravel-secrets
                   key: db_password_second
+            #
+            - name: DB_PORT_THIRD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_port_third
+            - name: DB_HOST_THIRD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_host_third
+            - name: DB_DATABASE_THIRD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_database_third
+            - name: DB_USERNAME_THIRD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_username_third
+            - name: DB_PASSWORD_THIRD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_password_third
+            #
+            - name: DB_PORT_FOURTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_port_fourth
+            - name: DB_HOST_FOURTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_host_fourth
+            - name: DB_DATABASE_FOURTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_database_fourth
+            - name: DB_USERNAME_FOURTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_username_fourth
+            - name: DB_PASSWORD_FOURTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_password_fourth
+            #
+            - name: DB_PORT_FIFTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_port_fifth
+            - name: DB_HOST_FIFTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_host_fifth
+            - name: DB_DATABASE_FIFTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_database_fifth
+            - name: DB_USERNAME_FIFTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_username_fifth
+            - name: DB_PASSWORD_FIFTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_password_fifth
+            #
+            - name: DB_PORT_SIXTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_port_sixth
+            - name: DB_HOST_SIXTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_host_sixth
+            - name: DB_DATABASE_SIXTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_database_sixth
+            - name: DB_USERNAME_SIXTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_username_sixth
+            - name: DB_PASSWORD_SIXTH
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-secrets
+                  key: db_password_sixth
+            #
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:

@@ -14,22 +14,22 @@ class CuotasService
         $this->CuotasRep = $CuotasRep;
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
         try {
 
-            return $this->CuotasRep->general($id,$mail);
+            return $this->CuotasRep->general($id,$mail, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function lectura_cuota($id)
+    public function lectura_cuota($id, $id_institucion)
     {
         try {
 
-            return $this->CuotasRep->lectura_cuotas($id);
+            return $this->CuotasRep->lectura_cuotas($id, $id_institucion);
 
         } catch (Exception $e) {
 

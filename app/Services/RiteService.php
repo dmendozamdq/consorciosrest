@@ -14,48 +14,28 @@ class RiteService
         $this->RiteRep = $RiteRep;
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
         try {
 
-            return $this->RiteRep->general($id,$mail);
+            return $this->RiteRep->general($id,$mail, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function lectura_rite($id)
+    public function lectura_rite($id, $id_institucion)
     {
         try {
 
-            return $this->RiteRep->lectura_rite($id);
+            return $this->RiteRep->lectura_rite($id, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function show($id)
-    {
-
-    }
-
-    public function store($data)
-    {
-
-    }
-
-    public function destroy($id)
-    {
-
-    }
-
-
-    public function update($data, $id)
-    {
-
-    }
 
 
 }

@@ -3,19 +3,22 @@
 namespace App\Repositories;
 
 use App\Models\Alumno;
+use App\Services\DataBaseService;
 
 class ReportesRepository
 {
 
     private $Alumno;
     protected $connection = 'mysql2';
+    private $dataBaseService;
 
-    function __construct(Alumno $Alumno)
+    function __construct(Alumno $Alumno, DataBaseService $dataBaseService)
     {
         $this->Alumno = $Alumno;
+        $this->dataBaseService = $dataBaseService;
     }
 
-    public function general($id)
+    public function general($id, $id_institucion)
     {
 
         try {
@@ -23,7 +26,7 @@ class ReportesRepository
 /*****************************************************************************************************/
 //Obtengo los periodos
 
-            $periodos = \DB::connection('mysql2')->select("
+            $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                             SELECT bs.ID, bs.Numero, bs.Periodo, bd.Leido, bs.Desde, bs.Hasta
                             FROM alumnos a
                             INNER JOIN boletines_detalle bd ON a.ID=bd.ID_Alumno
@@ -34,7 +37,7 @@ class ReportesRepository
                         ");
 
 
-            /* $periodosInasistencias = \DB::connection('mysql2')->select("
+            /* $periodosInasistencias = $this->dataBaseService->selectConexion($id_institucion)->select("
             SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
             FROM alumnos a
             INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -57,7 +60,7 @@ class ReportesRepository
 
             for ($i=0; $i < count($periodos); $i++) {
 
-                $ausente   = \DB::connection('mysql2')->select("
+                $ausente   = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT COUNT(e.Estado) AS 'total', e.Incidencia
                                 FROM asistencia a
                                 INNER JOIN estado e ON a.ID_Estado=e.ID
@@ -65,7 +68,7 @@ class ReportesRepository
                                 AND a.FECHA >= '{$periodos[$i]->Desde}' AND a.FECHA <= '{$periodos[$i]->Hasta}'
                                 ");
 
-                $justif   = \DB::connection('mysql2')->select("
+                $justif   = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT COUNT(e.Estado) AS 'total', e.Incidencia
                                 FROM asistencia a
                                 INNER JOIN estado e ON a.ID_Estado=e.ID
@@ -73,7 +76,7 @@ class ReportesRepository
                                 AND a.FECHA >= '{$periodos[$i]->Desde}' AND a.FECHA <= '{$periodos[$i]->Hasta}'
                             ");
 
-                $retiro   = \DB::connection('mysql2')->select("
+                $retiro   = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT COUNT(e.Estado) AS 'total', e.Incidencia
                                 FROM asistencia a
                                 INNER JOIN estado e ON a.ID_Estado=e.ID
@@ -81,7 +84,7 @@ class ReportesRepository
                                 AND a.FECHA >= '{$periodos[$i]->Desde}' AND a.FECHA <= '{$periodos[$i]->Hasta}'
                             ");
 
-                $tarde   = \DB::connection('mysql2')->select("
+                $tarde   = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT COUNT(e.Estado) AS 'total', e.Incidencia
                                 FROM asistencia a
                                 INNER JOIN estado e ON a.ID_Estado=e.ID
@@ -89,7 +92,7 @@ class ReportesRepository
                                 AND a.FECHA >= '{$periodos[$i]->Desde}' AND a.FECHA <= '{$periodos[$i]->Hasta}'
                             ");
 
-                $otros   = \DB::connection('mysql2')->select("
+                $otros   = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT COUNT(e.Estado) AS 'total', e.Incidencia
                                 FROM asistencia a
                                 INNER JOIN estado e ON a.ID_Estado=e.ID
@@ -97,7 +100,7 @@ class ReportesRepository
                                 AND a.FECHA >= '{$periodos[$i]->Desde}' AND a.FECHA <= '{$periodos[$i]->Hasta}'
                             ");
 
-                $detalle = \DB::connection('mysql2')->select("
+                $detalle = $this->dataBaseService->selectConexion($id_institucion)->select("
                     SELECT tas.ID, e.Estado, e.Incidencia, tas.Observaciones, tas.Fecha
                     FROM alumnos a
                     INNER JOIN asistencia tas ON a.ID=tas.ID_Alumnos
@@ -107,7 +110,7 @@ class ReportesRepository
                         ");
 
 
-        $notas = \DB::connection('mysql2')->select("
+        $notas = $this->dataBaseService->selectConexion($id_institucion)->select("
             SELECT m.ID, m.Materia, np.FECHA, np.Calificacion, calif.Tipo, if(np.Promediable = 2, ni.Pub_Cal_NP, np.Promediable) AS Promediable
             FROM alumnos a
             INNER JOIN notas_parciales np ON a.ID=np.ID_Alumno
@@ -117,7 +120,7 @@ class ReportesRepository
             WHERE np.ID_Alumno={$id} AND np.FECHA >= '{$periodos[$i]->Desde}' AND np.FECHA <= '{$periodos[$i]->Hasta}'
                 ");
 
-        $notas_grupales = \DB::connection('mysql2')->select("
+        $notas_grupales = $this->dataBaseService->selectConexion($id_institucion)->select("
             SELECT mg.ID, mg.Materia, npg.FECHA, npg.Calificacion, calif.Tipo, if(npg.Promediable = 2, ni.Pub_Cal_NP, npg.Promediable) AS Promediable
             FROM alumnos a
             INNER JOIN notas_parciales_grupales npg ON a.ID=npg.ID_Alumno
@@ -129,7 +132,7 @@ class ReportesRepository
 
 
 
-        $faltas = \DB::connection('mysql2')->select("
+        $faltas = $this->dataBaseService->selectConexion($id_institucion)->select("
                     SELECT rf.ID, rf.Fecha, f.Falta
                     FROM registro_faltas rf
                     INNER JOIN alumnos a ON rf.ID_Alumno=a.ID
@@ -244,31 +247,31 @@ class ReportesRepository
         }
     }
 
-    public function lectura_informe($id,$mail)
+    public function lectura_informe($id,$mail, $id_institucion)
       {
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $FechaActual=date("Y-m-d");
         $HoraActual=date("H:i:s");
         $alumno_array=array();
-        $lectura = \DB::connection('mysql2')->update("
+        $lectura = $this->dataBaseService->selectConexion($id_institucion)->update("
                             UPDATE boletines_detalle
                             SET Leido=1,Fecha_Leido='{$FechaActual}',Hora_Leido='{$HoraActual}'
                             WHERE ID={$id}
                         ");
-        $alumno_array = \DB::connection('mysql2')->select("
+        $alumno_array = $this->dataBaseService->selectConexion($id_institucion)->select("
                                         SELECT ID_Destinatario
                                         FROM boletines_detalle
                                         WHERE ID={$id}
                                     ");
         $ID_Estudiante = $alumno_array[0]->ID_Destinatario;
-        $carpeta = \DB::connection('mysql2')->select("
+        $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                             SELECT i.Carpeta
                             FROM institucion i
                             ORDER BY i.ID
                         ");
 
         //Obtengo el inicio y fin del ciclo lectivo
-        $periodos = \DB::connection('mysql2')->select("
+        $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                             SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
                             FROM alumnos a
                             INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -292,7 +295,7 @@ class ReportesRepository
 
             for ($i=0; $i < count($periodos); $i++)
                 {
-                  $informes = \DB::connection('mysql2')->select("
+                  $informes = $this->dataBaseService->selectConexion($id_institucion)->select("
                                   SELECT bd.ID, bd.ID_Boletin, bd.Aleatorio, bd.Tipo_Envio, bd.Leido, bd.Archivo
                                   FROM boletines_detalle bd
                                   INNER JOIN alumnos a ON bd.ID_Destinatario=a.ID
@@ -320,7 +323,7 @@ class ReportesRepository
                             if($Tipo_Envio==1)
                               {
                                 //LE DEBE PEGAR A LA API DE INFORMES COMO YA ESTABA
-                                $datos_boletin = \DB::connection('mysql2')->select("
+                                $datos_boletin = $this->dataBaseService->selectConexion($id_institucion)->select("
                                                 SELECT Fecha, Periodo, Texto_Adicional
                                                 FROM boletines_semanales
                                                 WHERE ID={$ID_Informe}
@@ -338,7 +341,7 @@ class ReportesRepository
                                 if($Tipo_Envio==3)
                                   {
                                     //EVALUACION CUALITATIVA
-                                    $datos_boletin = \DB::connection('mysql2')->select("
+                                    $datos_boletin = $this->dataBaseService->selectConexion($id_institucion)->select("
                                                     SELECT Fecha, Titulo
                                                     FROM evaluaciones_cualitativas
                                                     WHERE ID={$ID_Informe}
@@ -413,21 +416,21 @@ class ReportesRepository
             return $resultado;
       }
 
-  public function lista_informes($id,$mail)
+  public function lista_informes($id,$mail, $id_institucion)
     {
 
         try
           {
             //Obtengo el nombre de la carpeta
 
-              $carpeta = \DB::connection('mysql2')->select("
+              $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                               SELECT i.Carpeta
                               FROM institucion i
                               ORDER BY i.ID
                           ");
 
               //Obtengo el inicio y fin del ciclo lectivo
-              $periodos = \DB::connection('mysql2')->select("
+              $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                               SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
                               FROM alumnos a
                               INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -451,7 +454,7 @@ class ReportesRepository
 
               for ($i=0; $i < count($periodos); $i++)
                   {
-                    $informes = \DB::connection('mysql2')->select("
+                    $informes = $this->dataBaseService->selectConexion($id_institucion)->select("
                                     SELECT bd.ID, bd.ID_Boletin, bd.Aleatorio, bd.Tipo_Envio, bd.Leido, bd.Archivo
                                     FROM boletines_detalle bd
                                     INNER JOIN alumnos a ON bd.ID_Destinatario=a.ID
@@ -479,7 +482,7 @@ class ReportesRepository
                               if($Tipo_Envio==1)
                                 {
                                   //LE DEBE PEGAR A LA API DE INFORMES COMO YA ESTABA
-                                  $datos_boletin = \DB::connection('mysql2')->select("
+                                  $datos_boletin = $this->dataBaseService->selectConexion($id_institucion)->select("
                                                   SELECT Fecha, Periodo, Texto_Adicional
                                                   FROM boletines_semanales
                                                   WHERE ID={$ID_Informe}
@@ -497,7 +500,7 @@ class ReportesRepository
                                   if($Tipo_Envio==3)
                                     {
                                       //EVALUACION CUALITATIVA
-                                      $datos_boletin = \DB::connection('mysql2')->select("
+                                      $datos_boletin = $this->dataBaseService->selectConexion($id_institucion)->select("
                                                       SELECT Fecha, Titulo
                                                       FROM evaluaciones_cualitativas
                                                       WHERE ID={$ID_Informe}

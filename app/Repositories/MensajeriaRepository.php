@@ -5,55 +5,59 @@ namespace App\Repositories;
 use App\Models\Alumno;
 
 use function GuzzleHttp\json_decode;
+use App\Services\DataBaseService;
+
 
 class MensajeriaRepository
 {
 
     private $Alumno;
     protected $connection = 'mysql2';
+    private $dataBaseService;
 
-    function __construct(Alumno $Alumno)
+    function __construct(Alumno $Alumno, DataBaseService $dataBaseService)
     {
         $this->Alumno = $Alumno;
+        $this->dataBaseService = $dataBaseService;
     }
 
-    public function lectura_mensajeria($id)
+    public function lectura_mensajeria($id, $id_institucion)
     {
       date_default_timezone_set('America/Argentina/Buenos_Aires');
       $FechaActual=date("Y-m-d");
       $HoraActual=date("H:i:s");
-      $chats = \DB::connection('mysql2')->select("
+      $chats = $this->dataBaseService->selectConexion($id_institucion)->select("
                           SELECT chcc.Codigo
                           FROM chat_codigo_conversaciones chcc
                           WHERE chcc.ID={$id}
                             ");
       $codigo_chat = trim(utf8_decode($chats[0]->Codigo));
 
-      $lectura = \DB::connection('mysql2')->update("
+      $lectura = $this->dataBaseService->selectConexion($id_institucion)->update("
                       UPDATE chat
                       SET Leido=1,Fecha_Leido='{$FechaActual}',Hora_Leido='{$HoraActual}'
                       WHERE Codigo='{$codigo_chat}' AND Tipo_Destinatario=2 and Leido=0 and B=0
                   ");
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
 
         try {
 /*****************************************************************************************************/
 //obtengo el ID de la familia
                       $id_familia_c =  \DB::select("
-                      SELECT  rf.ID
-                      FROM reg_familiar rf
-                      WHERE rf.Email='{$mail}'
+                      SELECT rf.id
+                      FROM users rf
+                      WHERE rf.email='{$mail}'
                       ");
-                      
-                      $id_familia = $id_familia_c[0]->ID;
+
+                      $id_familia = $id_familia_c[0]->id;
                       //$id_familia = 6;
 
 //Obtengo el nombre de la carpeta
 
-                      $carpeta = \DB::connection('mysql2')->select("
+                      $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT i.Carpeta
                                       FROM institucion i
                                       ORDER BY i.ID
@@ -61,7 +65,7 @@ class MensajeriaRepository
 
 //Obtengo el inicio y fin del ciclo lectivo
 
-                      $periodos = \DB::connection('mysql2')->select("
+                      $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
                                       FROM alumnos a
                                       INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -80,10 +84,10 @@ class MensajeriaRepository
             $comunicados = array();
             $chats = array();
             $i = 0;
-            
-            
+
+
             //Consulto los Chats Activos del usuario
-            $chats = \DB::connection('mysql2')->select("
+            $chats = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT chcc.ID, chcc.Codigo, chcc.ID_Familia, chcc.ID_Docente
                                 FROM chat_codigo_conversaciones chcc
                                 WHERE chcc.ID_Alumno={$id} AND chcc.ID_Familia={$id_familia}
@@ -95,7 +99,7 @@ class MensajeriaRepository
               }
             else
              {
-              //$resultado[0]['chats_activos'] = array(); 
+              //$resultado[0]['chats_activos'] = array();
               $ref=0;
               for ($k=0; $k < count($chats); $k++) {
 
@@ -106,7 +110,7 @@ class MensajeriaRepository
 
                    if($ID_Docente>=10000)
                      {
-                       $Docente_Consulta = \DB::connection('mysql2')->select("
+                       $Docente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                        SELECT chg.Nombre
                                        FROM chat_grupos chg
                                        WHERE chg.ID={$ID_Docente}
@@ -120,7 +124,7 @@ class MensajeriaRepository
                      }
                    else
                      {
-                       $Docente_Consulta = \DB::connection('mysql2')->select("
+                       $Docente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                        SELECT pd.Nombre, pd.Apellido
                                        FROM personal pd
                                        WHERE pd.ID={$ID_Docente} and pd.Estado='H'
@@ -138,7 +142,7 @@ class MensajeriaRepository
                   if($Ctrl_Docente>=1)
                     {
                       $Docente= trim(strip_tags(html_entity_decode(utf8_decode($Docente))));
-                      $comunicados = \DB::connection('mysql2')->select("
+                      $comunicados = $this->dataBaseService->selectConexion($id_institucion)->select("
                                         SELECT ch.Fecha, ch.Tipo_Remitente, ch.ID_Remitente, ch.Codigo, ch.Hora, ch.Mensaje, ch.Leido, ch.Fecha_Leido, ch.Hora_Leido
                                         FROM chat ch
                                         WHERE ch.ID_Alumno={$id} AND ch.Codigo='{$Codigo}' and ch.B=0 order by ch.ID desc limit 1
@@ -150,6 +154,7 @@ class MensajeriaRepository
                                                            'hora'  => $comunicados[0]->Hora,
                                                            //'codigo'=> $Codigo,
                                                            'usuario_destino'  => addslashes(html_entity_decode($Docente)),
+                                                           'id_destinatario'  => $ID_Docente,
                                                            'tipo_remitente'  => $comunicados[0]->Tipo_Remitente,
                                                            //trim(strip_tags(html_entity_decode(utf8_decode($$comunicados[0]->Mensaje)))),
                                                            'ultimo_mensaje'=>  trim(strip_tags(html_entity_decode(utf8_decode($comunicados[0]->Mensaje)))),
@@ -160,8 +165,8 @@ class MensajeriaRepository
                       $ref++;
 
                     }
-                  
-                    
+
+
 
                }
             }
@@ -175,13 +180,13 @@ class MensajeriaRepository
         }
       }
 
-    public function historial_mensajes($id)
+    public function historial_mensajes($id, $id_institucion)
     {
 
         try {
     /*****************************************************************************************************/
     //Obtengo el Código de Chat y el Destinatario
-    $chats = \DB::connection('mysql2')->select("
+    $chats = $this->dataBaseService->selectConexion($id_institucion)->select("
                         SELECT chcc.Codigo, chcc.ID_Docente, chcc.ID_Alumno
                         FROM chat_codigo_conversaciones chcc
                         WHERE chcc.ID={$id}
@@ -191,7 +196,7 @@ class MensajeriaRepository
     $ID_Alumno = $chats[0]->ID_Alumno;
     if($ID_Docente>=10000)
       {
-        $Docente_Consulta = \DB::connection('mysql2')->select("
+        $Docente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
                         SELECT chg.Nombre
                         FROM chat_grupos chg
                         WHERE chg.ID={$ID_Docente}
@@ -200,7 +205,7 @@ class MensajeriaRepository
       }
     else
       {
-        $Docente_Consulta = \DB::connection('mysql2')->select("
+        $Docente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
                         SELECT pd.Nombre, pd.Apellido
                         FROM personal pd
                         WHERE pd.ID={$ID_Docente}
@@ -225,7 +230,7 @@ class MensajeriaRepository
             //for ($i=0; $i < count($periodos); $i++) {
 
                 //CONSULTO EL LOS EVENTOS PROXIMOS
-                $historial = \DB::connection('mysql2')->select("
+                $historial = $this->dataBaseService->selectConexion($id_institucion)->select("
                                   SELECT ch.id, ch.Fecha, ch.Tipo_Remitente, ch.ID_Remitente, ch.Codigo, ch.Hora, ch.Mensaje, ch.Leido, ch.Fecha_Leido, ch.Hora_Leido
                                   FROM chat ch
                                   WHERE ch.ID_Alumno={$ID_Alumno} AND ch.Codigo='{$codigo_chat}' and ch.B=0 order by ch.ID desc
@@ -239,7 +244,7 @@ class MensajeriaRepository
                   {
                     if($ID_Remitente>=10000)
                       {
-                        $Remitente_Consulta = \DB::connection('mysql2')->select("
+                        $Remitente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                         SELECT chg.Nombre
                                         FROM chat_grupos chg
                                         WHERE chg.ID={$ID_Remitente}
@@ -248,7 +253,7 @@ class MensajeriaRepository
                       }
                     else
                       {
-                        $Remitente_Consulta = \DB::connection('mysql2')->select("
+                        $Remitente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                         SELECT pd.Nombre, pd.Apellido
                                         FROM personal pd
                                         WHERE pd.ID={$ID_Remitente}
@@ -293,14 +298,14 @@ class MensajeriaRepository
         }
     }
 
-    public function enviar_chat($id,$chat)
+    public function enviar_chat($id,$chat, $id_institucion)
     {
       try {
 
               date_default_timezone_set('America/Argentina/Buenos_Aires');
               $FechaActual=date("Y-m-d");
               $HoraActual=date("H:i:s");
-              $chats = \DB::connection('mysql2')->select("
+              $chats = $this->dataBaseService->selectConexion($id_institucion)->select("
                                   SELECT chcc.Codigo, chcc.ID_Docente, chcc.ID_Alumno, chcc.ID_Familia
                                   FROM chat_codigo_conversaciones chcc
                                   WHERE chcc.ID={$id}
@@ -310,15 +315,16 @@ class MensajeriaRepository
               $ID_Alumno = $chats[0]->ID_Alumno;
               $ID_Familia = $chats[0]->ID_Familia;
 
-              $consulta_nivel = \DB::connection('mysql2')->select("
+              $consulta_nivel = $this->dataBaseService->selectConexion($id_institucion)->select("
                               SELECT a.ID_Nivel
                               FROM alumnos a
                               WHERE a.ID={$ID_Alumno}
                           ");
 
               $ID_Nivel = $consulta_nivel[0]->ID_Nivel;
+              //$chat=utf8_encode($chat);
               $chat=utf8_encode($chat);
-              $envio_chat = \DB::connection('mysql2')->Insert("
+              $envio_chat = $this->dataBaseService->selectConexion($id_institucion)->Insert("
                               INSERT INTO chat
                               (Fecha,Hora,ID_Remitente,Tipo_Remitente,ID_Destinatario,Tipo_Destinatario,Mensaje,Codigo,ID_Alumno,ID_Nivel,P)
                               VALUES
@@ -331,22 +337,23 @@ class MensajeriaRepository
           }
         }
 
-          public function nuevo_chat($id,$id_alumno,$mail,$chat)
+          public function nuevo_chat($id,$id_alumno,$mail,$chat,$id_institucion)
           {
             try {
 
                     date_default_timezone_set('America/Argentina/Buenos_Aires');
                     $FechaActual=date("Y-m-d");
                     $HoraActual=date("H:i:s");
+                    //$id_institucion=11;
                     //obtengo el ID de la familia
                     $id_familia_c =  \DB::select("
-                                      SELECT  rf.ID
-                                      FROM reg_familiar rf
-                                      WHERE rf.Email='{$mail}'
+                                      SELECT rf.id
+                                      FROM users rf
+                                      WHERE rf.email='{$mail}'
                                       ");
-                    $id_familia = $id_familia_c[0]->ID;
+                    $id_familia = $id_familia_c[0]->id;
                     //VERIFICO QUE NO HAYA CHAT EXISTENTE PREVIAMENTE
-                    $conversacion_previa=  \DB::connection('mysql2')->select("
+                    $conversacion_previa=  $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT chcc.ID, chcc.Codigo
                                       FROM chat_codigo_conversaciones chcc
                                       WHERE chcc.ID_Docente={$id} AND chcc.ID_Familia={$id_familia} AND ID_Alumno={$id_alumno}
@@ -364,14 +371,14 @@ class MensajeriaRepository
                              $Cadena_Aleatoria .= substr($caracteres,rand(0,strlen($caracteres)),1);
                            }
                         $codigo_chat=$Cadena_Aleatoria;
-                        $generacion_conversacion = \DB::connection('mysql2')->insert("
+                        $generacion_conversacion = $this->dataBaseService->selectConexion($id_institucion)->insert("
                                         INSERT INTO chat_codigo_conversaciones
                                         (ID_Docente,ID_Familia,ID_Alumno,Codigo,Fecha,Hora)
                                         VALUES
                                         ({$id},{$id_familia},{$id_alumno},'{$codigo_chat}','{$FechaActual}','{$HoraActual}')
                                     ");
 
-                        $conversacion_previa =  \DB::connection('mysql2')->select("
+                        $conversacion_previa =  $this->dataBaseService->selectConexion($id_institucion)->select("
                                                   SELECT chcc.ID, chcc.Codigo
                                                   FROM chat_codigo_conversaciones chcc
                                                   WHERE chcc.ID_Docente={$id} AND chcc.ID_Familia={$id_familia} AND ID_Alumno={$id_alumno}
@@ -382,22 +389,165 @@ class MensajeriaRepository
                         $codigo_chat = trim(utf8_decode($conversacion_previa[0]->Codigo));
                         $id_chat = $conversacion_previa[0]->ID;
                       }
-                    $consulta_nivel = \DB::connection('mysql2')->select("
+                    $consulta_nivel = $this->dataBaseService->selectConexion($id_institucion)->select("
                                     SELECT a.ID_Nivel
                                     FROM alumnos a
                                     WHERE a.ID={$id_alumno}
                                 ");
-
+                    $chat=utf8_encode($chat);
                     $ID_Nivel = $consulta_nivel[0]->ID_Nivel;
-                    $envio_chat = \DB::connection('mysql2')->Insert("
+                    $envio_chat = $this->dataBaseService->selectConexion($id_institucion)->Insert("
                                     INSERT INTO chat
                                     (Fecha,Hora,ID_Remitente,Tipo_Remitente,ID_Destinatario,Tipo_Destinatario,Mensaje,Codigo,ID_Alumno,ID_Nivel,P)
                                     VALUES
                                     ('{$FechaActual}','{$HoraActual}',{$id_familia},2,{$id},1,'{$chat}','{$codigo_chat}',{$id_alumno},{$ID_Nivel},1)
                                 ");
+                    $resultado[0]['id_chat'] = $id_chat;
+                    //DESDE ACA
+                    $historial = $this->dataBaseService->selectConexion($id_institucion)->select("
+                    SELECT ch.id, ch.Fecha, ch.Tipo_Remitente, ch.ID_Remitente, ch.Codigo, ch.Hora, ch.Mensaje, ch.Leido, ch.Fecha_Leido, ch.Hora_Leido
+                    FROM chat ch
+                    WHERE ch.ID_Alumno={$id_alumno} AND ch.Codigo='{$codigo_chat}' and ch.B=0 order by ch.ID desc
+                      ");
 
-                    return $id_chat;
+                    for ($k=0; $k < count($historial); $k++) {
 
+                    $Tipo_Remitente = $historial[$k]->Tipo_Remitente;
+                    $ID_Remitente = $historial[$k]->ID_Remitente;
+                    if($Tipo_Remitente==1)
+                      {
+                        if($ID_Remitente>=10000)
+                          {
+                            $Remitente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
+                                            SELECT chg.Nombre
+                                            FROM chat_grupos chg
+                                            WHERE chg.ID={$ID_Remitente}
+                                              ");
+                            $Remitente = trim(utf8_decode($Remitente_Consulta[0]->Nombre));
+                          }
+                        else
+                          {
+                            $Remitente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
+                                            SELECT pd.Nombre, pd.Apellido
+                                            FROM personal pd
+                                            WHERE pd.ID={$ID_Remitente}
+                                              ");
+                            $Nombre_D = trim(utf8_decode($Remitente_Consulta[0]->Nombre));
+                            $Apellido_D = trim(utf8_decode($Remitente_Consulta[0]->Apellido));
+                            $Remitente = $Apellido_D . ', ' . $Nombre_D;
+                          }
+                      }
+                    else
+                      {
+                        $Remitente='Yo';
+                      }
+                      $resultado[0]['chats'][$k] = array(
+                                                            'id' => $historial[$k]->id,
+                                                            'fecha' => $historial[$k]->Fecha,
+                                                            'hora'  => $historial[$k]->Hora,
+                                                            //'codigo'=> $Codigo,
+                                                            'usuario_destino'  => html_entity_decode($Remitente),
+                                                            'tipo_remitente'  => $historial[$k]->Tipo_Remitente,
+                                                            'ultimo_mensaje'=> trim(strip_tags(html_entity_decode(utf8_decode($historial[$k]->Mensaje)))),
+                                                            'leido'    => $historial[$k]->Leido,
+                                                            'fecha_leido'    => $historial[$k]->Fecha_Leido,
+                                                            'hora_leido'    => $historial[$k]->Hora_Leido,
+                                                            );
+                    }
+
+
+                    //return $id_chat;
+                    //HASTA ACA
+
+/*
+                    $chats = $this->dataBaseService->selectConexion($id_institucion)->select("
+                                        SELECT chcc.ID, chcc.Codigo, chcc.ID_Familia, chcc.ID_Docente
+                                        FROM chat_codigo_conversaciones chcc
+                                        WHERE chcc.ID_Alumno={$id_alumno} AND chcc.ID_Familia={$id_familia}
+                                          ");
+
+
+                    if(empty($chats))
+                      {
+                        $resultado[0]['chats_activos'] = array();
+                      }
+                    else
+                     {
+                      //$resultado[0]['chats_activos'] = array();
+                      $ref=0;
+                      for ($k=0; $k < count($chats); $k++)
+                        {
+
+                           $ID_Chat = $chats[$k]->ID;
+                           $Codigo = trim(utf8_decode($chats[$k]->Codigo));
+                           $ID_Fam = $chats[$k]->ID_Familia;
+                           $ID_Docente = $chats[$k]->ID_Docente;
+
+                           if($ID_Docente>=10000)
+                             {
+                               $Docente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
+                                               SELECT chg.Nombre
+                                               FROM chat_grupos chg
+                                               WHERE chg.ID={$ID_Docente}
+                                                 ");
+                               $Ctrl_Docente = count($Docente_Consulta);
+                               if($Ctrl_Docente>=1)
+                                {
+                                  $Docente = $Docente_Consulta[0]->Nombre;
+                                }
+
+                             }
+                           else
+                             {
+                               $Docente_Consulta = $this->dataBaseService->selectConexion($id_institucion)->select("
+                                               SELECT pd.Nombre, pd.Apellido
+                                               FROM personal pd
+                                               WHERE pd.ID={$ID_Docente} and pd.Estado='H'
+                                                 ");
+                               $Ctrl_Docente = count($Docente_Consulta);
+                               if($Ctrl_Docente>=1)
+                                {
+                                  $Nombre_D = $Docente_Consulta[0]->Nombre;
+                                  $Apellido_D = $Docente_Consulta[0]->Apellido;
+                                  $Docente = $Apellido_D.', '.$Nombre_D;
+                                }
+
+                             }
+                          //$Ctrl_Docente=1;
+                          if($Ctrl_Docente>=1)
+                            {
+                              $Docente= trim(strip_tags(html_entity_decode(utf8_decode($Docente))));
+                              $comunicados = $this->dataBaseService->selectConexion($id_institucion)->select("
+                                                SELECT ch.Fecha, ch.Tipo_Remitente, ch.ID_Remitente, ch.Codigo, ch.Hora, ch.Mensaje, ch.Leido, ch.Fecha_Leido, ch.Hora_Leido
+                                                FROM chat ch
+                                                WHERE ch.ID_Alumno={$id} AND ch.Codigo='{$Codigo}' and ch.B=0 order by ch.ID desc limit 1
+                                                  ");
+                              //Armo estructura del JSON en $resultado
+                              $resultado[$i]['chats_activos'][$ref] = array(
+                                                                   'id_chat'    => $ID_Chat,
+                                                                   'fecha' => $comunicados[0]->Fecha,
+                                                                   'hora'  => $comunicados[0]->Hora,
+                                                                   //'codigo'=> $Codigo,
+                                                                   'usuario_destino'  => addslashes(html_entity_decode($Docente)),
+                                                                   'tipo_remitente'  => $comunicados[0]->Tipo_Remitente,
+                                                                   //trim(strip_tags(html_entity_decode(utf8_decode($$comunicados[0]->Mensaje)))),
+                                                                   'ultimo_mensaje'=>  trim(strip_tags(html_entity_decode(utf8_decode($comunicados[0]->Mensaje)))),
+                                                                   'leido'    => $comunicados[0]->Leido,
+                                                                   'fecha_leido'    => $comunicados[0]->Fecha_Leido,
+                                                                   'hora_leido'    => $comunicados[0]->Hora_Leido
+                                                                  );
+                              $ref++;
+
+                            }
+
+
+
+                       }
+                    }
+
+                    return $resultado;
+*/
+return $resultado;
                 } catch (\Exception $e) {
                     return $e;
                 }
@@ -405,13 +555,13 @@ class MensajeriaRepository
 
 
     }
-    public function destinatarios_chats($id)
+    public function destinatarios_chats($id, $id_institucion)
     {
 
         try {
     /*****************************************************************************************************/
     //Obtengo el Nivel y Curso del Estudiante
-    $consulta_nivel = \DB::connection('mysql2')->select("
+    $consulta_nivel = $this->dataBaseService->selectConexion($id_institucion)->select("
                     SELECT a.ID_Nivel, a.ID_Curso
                     FROM alumnos a
                     WHERE a.ID={$id}
@@ -421,7 +571,7 @@ class MensajeriaRepository
     $ID_Curso = $consulta_nivel[0]->ID_Curso;
 
     //Obtengo el Ciclo Lectivo Vigente
-    $id_ciclo_c =  \DB::connection('mysql2')->select("
+    $id_ciclo_c =  $this->dataBaseService->selectConexion($id_institucion)->select("
                         SELECT  cl.ID
                         FROM ciclo_lectivo cl
                         WHERE cl.ID_Nivel='{$ID_Nivel}' AND cl.Vigente='SI'
@@ -429,7 +579,7 @@ class MensajeriaRepository
     $id_ciclo = $id_ciclo_c[0]->ID;
 
 
-    $grupos = \DB::connection('mysql2')->select("
+    $grupos = $this->dataBaseService->selectConexion($id_institucion)->select("
                         SELECT chg.ID, chg.Nombre, chg.Referencia
                         FROM chat_grupos chg
                         WHERE chg.ID_Nivel={$ID_Nivel} ORDER BY Nombre
@@ -446,7 +596,7 @@ class MensajeriaRepository
       $Ref_Grupo=trim(utf8_decode($grupos[$k]->Referencia));
       if($Ref_Grupo=='PF')
         {
-          $profesores_c = \DB::connection('mysql2')->select("
+          $profesores_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                               SELECT mg.ID_Personal, mg.ID, per.Nombre, per.Apellido
                               FROM materias_grupales mg
                               INNER JOIN personal per ON mg.ID_Personal=per.ID
@@ -476,7 +626,7 @@ class MensajeriaRepository
         {
           if(($Ref_Grupo=='MG') or ($Ref_Grupo=='MI') or ($Ref_Grupo=='PR'))
             {
-              $maestros_c = \DB::connection('mysql2')->select("
+              $maestros_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                   SELECT cur.ID_Preceptor, cur.ID_Pareja, cur.ID_Pareja2, cur.ID_Pareja3
                                   FROM cursos cur
                                   WHERE cur.ID={$ID_Curso}
@@ -486,7 +636,7 @@ class MensajeriaRepository
                   $ID_MG2=$maestros_c[0]->ID_Pareja;
                   $ID_MG3=$maestros_c[0]->ID_Pareja2;
                   $ID_MG4=$maestros_c[0]->ID_Pareja3;
-                  $maestro_c = \DB::connection('mysql2')->select("
+                  $maestro_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT per.Nombre, per.Apellido
                                       FROM personal per
                                       WHERE per.ID={$ID_MG1}
@@ -503,7 +653,7 @@ class MensajeriaRepository
 
                   if($ID_MG2>=1)
                     {
-                      $maestro_c = \DB::connection('mysql2')->select("
+                      $maestro_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                           SELECT per.Nombre, per.Apellido
                                           FROM personal per
                                           WHERE per.ID={$ID_MG2}
@@ -520,7 +670,7 @@ class MensajeriaRepository
                     }
                   if($ID_MG3>=1)
                       {
-                        $maestro_c = \DB::connection('mysql2')->select("
+                        $maestro_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                             SELECT per.Nombre, per.Apellido
                                             FROM personal per
                                             WHERE per.ID={$ID_MG3}
@@ -537,7 +687,7 @@ class MensajeriaRepository
                       }
                   if($ID_MG4>=1)
                           {
-                            $maestro_c = \DB::connection('mysql2')->select("
+                            $maestro_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                                 SELECT per.Nombre, per.Apellido
                                                 FROM personal per
                                                 WHERE per.ID={$ID_MG4}

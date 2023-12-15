@@ -14,59 +14,39 @@ class PublicacionesService
         $this->PublicacionesRep = $PublicacionesRep;
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
         try {
 
-            return $this->PublicacionesRep->general($id,$mail);
+            return $this->PublicacionesRep->general($id,$mail, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function lectura_publicacion($id)
+    public function lectura_publicacion($id, $id_institucion)
     {
         try {
 
-            return $this->PublicacionesRep->lectura_publicacion($id);
+            return $this->PublicacionesRep->lectura_publicacion($id, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function contenido_publicacion($id)
+    public function contenido_publicacion($id, $id_institucion)
     {
         try {
 
-            return $this->PublicacionesRep->contenido_publicacion($id);
+            return $this->PublicacionesRep->contenido_publicacion($id, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function show($id)
-    {
-
-    }
-
-    public function store($data)
-    {
-
-    }
-
-    public function destroy($id)
-    {
-
-    }
-
-
-    public function update($data, $id)
-    {
-
-    }
 
 
 }

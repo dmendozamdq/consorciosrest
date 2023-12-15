@@ -38,7 +38,6 @@ class UsuariosController extends Controller
 
         ]);
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -212,8 +211,9 @@ class UsuariosController extends Controller
      */
     public function login(Request $request) 
     {
+       
         $credentials = request(['Email', 'Contrasenia']);
-        $credentials['Contrasenia'] = md5($credentials['Contrasenia']);
+        //$credentials['Contrasenia'] = md5($credentials['Contrasenia']);
 
 
         //Update DeviceID
@@ -228,8 +228,33 @@ class UsuariosController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        
         return $this->respondWithToken($token);
 
+       
+      /*
+      $credentials = request(['name', 'password']);
+      $credentials['password'] = md5($credentials['password']);
+        
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        //Update DeviceID
+        /*
+        $DeviceID = request(['DeviceID']);
+        if ($DeviceID)
+            $this->UsuariosService->updateDeviceID($DeviceID['DeviceID'], $credentials['name']);
+
+
+        $token = auth()->attempt($credentials);
+
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        */
+        return $this->respondWithToken($token);
+       
     }
 
 

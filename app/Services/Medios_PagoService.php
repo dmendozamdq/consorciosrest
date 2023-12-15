@@ -16,22 +16,78 @@ class Medios_PagoService
 
     
 
-    public function agregar_medio_pago($nombre)
+    public function agregar_medio_pago($id,$nombre)
     {
         try {
 
-            return $this->Medios_PagoRep->agregar_medio_pago($nombre);
+            return $this->Medios_PagoRep->agregar_medio_pago($id,$nombre);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function borrar_medio_pago($id)
+    public function modificar_medio_pago($id, $nombre,$estado,$id_medio_pago)
     {
         try {
 
-            return $this->Medios_PagoRep->borrar_medio_pago($id);
+            return $this->Medios_PagoRep->modificar_medio_pago($id, $nombre,$estado,$id_medio_pago);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function activar_medio_pago($id,$id_medio_pago)
+    {
+        try {
+
+            return $this->Medios_PagoRep->activar_medio_pago($id,$id_medio_pago);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function desactivar_medio_pago($id,$id_medio_pago)
+    {
+        try {
+
+            return $this->Medios_PagoRep->desactivar_medio_pago($id,$id_medio_pago);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function borrar_medio_pago($id,$id_medio_pago)
+    {
+        try {
+
+            return $this->Medios_PagoRep->borrar_medio_pago($id,$id_medio_pago);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function mostrar_medio_pago($id)
+    {
+        try {
+
+            return $this->Medios_PagoRep->mostrar_medio_pago($id);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+
+    public function ver_medio_pago($id,$id_medio_pago)
+    {
+        try {
+
+            return $this->Medios_PagoRep->ver_medio_pago($id,$id_medio_pago);
 
         } catch (Exception $e) {
 

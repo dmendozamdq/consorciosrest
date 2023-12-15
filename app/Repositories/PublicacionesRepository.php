@@ -3,31 +3,33 @@
 namespace App\Repositories;
 
 use App\Models\Alumno;
-
 use function GuzzleHttp\json_decode;
+use App\Services\DataBaseService;
 
 class PublicacionesRepository
 {
 
     private $Alumno;
     protected $connection = 'mysql2';
+    private $dataBaseService;
 
-    function __construct(Alumno $Alumno)
+    function __construct(Alumno $Alumno, DataBaseService $dataBaseService)
     {
         $this->Alumno = $Alumno;
+        $this->dataBaseService = $dataBaseService;
     }
 
-    public function lectura_publicacion($id)
+    public function lectura_publicacion($id, $id_institucion)
     {
       $FechaActual=date("Y-m-d");
       $HoraActual=date("H:i:s");
-      $lectura = \DB::connection('mysql2')->update("
+      $lectura = $this->dataBaseService->selectConexion($id_institucion)->update("
                       UPDATE publicaciones_detalle
                       SET Leido=1,Fecha_Leido='{$FechaActual}',Hora_Leido='{$HoraActual}'
                       WHERE ID={$id}
                   ");
 
-      $userpub = \DB::connection('mysql2')->select("
+      $userpub = $this->dataBaseService->selectConexion($id_institucion)->select("
                       SELECT ID_Destinatario, MailD
                       FROM publicaciones_detalle
                       WHERE ID={$id}
@@ -35,7 +37,7 @@ class PublicacionesRepository
       $ID_Estudiante = $userpub[0]->ID_Destinatario;
       $Mail_User = $userpub[0]->MailD;
 
-      $comunicados = \DB::connection('mysql2')->select("
+      $comunicados = $this->dataBaseService->selectConexion($id_institucion)->select("
                       SELECT pd.ID, pd.ID_Comunicado, p.Fecha, p.Titulo, p.Descripcion, pd.Leido
                       FROM publicaciones_detalle pd
                       INNER JOIN alumnos a ON pd.ID_Destinatario=a.ID
@@ -74,14 +76,14 @@ class PublicacionesRepository
 
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
 
         try {
 /*****************************************************************************************************/
 //Obtengo el nombre de la carpeta
                       $FechaActual=date("Y-m-d");
-                      $carpeta = \DB::connection('mysql2')->select("
+                      $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT i.Carpeta
                                       FROM institucion i
                                       ORDER BY i.ID
@@ -89,7 +91,7 @@ class PublicacionesRepository
 
 //Obtengo el inicio y fin del ciclo lectivo
 
-                      $periodos = \DB::connection('mysql2')->select("
+                      $periodos = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT bs.ID, bs.ciclo_lectivo, bs.IPT, bs.FTT
                                       FROM alumnos a
                                       INNER JOIN ciclo_lectivo bs ON a.ID_Nivel=bs.ID_Nivel
@@ -113,7 +115,7 @@ class PublicacionesRepository
 
                 //CONSULTO COMUNICADOS
 
-                $comunicados = \DB::connection('mysql2')->select("
+                $comunicados = $this->dataBaseService->selectConexion($id_institucion)->select("
                                 SELECT pd.ID, pd.ID_Comunicado, p.Fecha, p.Titulo, p.Descripcion, pd.Leido
                                 FROM publicaciones_detalle pd
                                 INNER JOIN alumnos a ON pd.ID_Destinatario=a.ID
@@ -174,18 +176,18 @@ class PublicacionesRepository
             return $e;
         }
     }
-    public function contenido_publicacion($id)
+    public function contenido_publicacion($id, $id_institucion)
     {
 
         try {
               /*****************************************************************************************************/
-              $carpeta = \DB::connection('mysql2')->select("
+              $carpeta = $this->dataBaseService->selectConexion($id_institucion)->select("
                               SELECT i.Carpeta
                               FROM institucion i
                               ORDER BY i.ID
                           ");
                 //Obtengo los datos de la publicación
-                $publicacion_c = \DB::connection('mysql2')->select("
+                $publicacion_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                     SELECT p.Titulo, p.Fecha, p.Descripcion, p.Estado
                                     FROM publicaciones p
                                     WHERE p.ID={$id}
@@ -211,7 +213,7 @@ class PublicacionesRepository
                 if($Estado_P=='P')
                   {
                     //Consulto las imagenes que tiene la publicación
-                    $imagenes_c = \DB::connection('mysql2')->select("
+                    $imagenes_c = $this->dataBaseService->selectConexion($id_institucion)->select("
                                       SELECT pi.Imagen
                                       FROM pubicaciones_imagenes pi
                                       WHERE pi.ID_Publicacion={$id}

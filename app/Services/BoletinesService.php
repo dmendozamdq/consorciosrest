@@ -14,22 +14,22 @@ class BoletinesService
         $this->BoletinesRep = $BoletinesRep;
     }
 
-    public function general($id,$mail)
+    public function general($id,$mail, $id_institucion)
     {
         try {
 
-            return $this->BoletinesRep->general($id,$mail);
+            return $this->BoletinesRep->general($id,$mail, $id_institucion);
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function lectura_boletin($id)
+    public function lectura_boletin($id, $id_institucion)
     {
         try {
 
-            return $this->BoletinesRep->lectura_boletin($id);
+            return $this->BoletinesRep->lectura_boletin($id, $id_institucion);
 
         } catch (Exception $e) {
 

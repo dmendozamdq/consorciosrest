@@ -14,28 +14,107 @@ class HomeService
         $this->HomeRep = $HomeRep;
     }
 
-    public function general($id)
+   
+
+    public function total_facturado($id, $filtro)
     {
         try {
 
-            return $this->HomeRep->general($id);
+            return $this->HomeRep->total_facturado($id, $filtro);
 
         } catch (Exception $e) {
 
         }
     }
 
-    /*public function lectura_comunicado($id)
+    public function total_cobrado($id, $filtro)
     {
         try {
 
-            return $this->HomeRep->lectura_comunicado($id);
+            return $this->HomeRep->total_cobrado($id, $filtro);
 
         } catch (Exception $e) {
 
         }
     }
-*/
+
+    public function total_cobranza($id, $filtro)
+    {
+        try {
+
+            return $this->HomeRep->total_cobranza($id, $filtro);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function detalle_cobranza($id, $filtro)
+    {
+        try {
+
+            return $this->HomeRep->detalle_cobranza($id, $filtro);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function total_estudiantes($id, $filtro)
+    {
+        try {
+
+            return $this->HomeRep->total_estudiantes($id, $filtro);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function cobranza_evolutiva($id, $filtro)
+    {
+        try {
+
+            return $this->HomeRep->cobranza_evolutiva($id, $filtro);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function sintesis_medios_pago($id, $filtro)
+    {
+        try {
+
+            return $this->HomeRep->sintesis_medios_pago($id, $filtro);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function cobranzas_recientes($id, $filtro)
+    {
+        try {
+
+            return $this->HomeRep->cobranzas_recientes($id, $filtro);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function notificaciones($id, $id_usuario)
+    {
+        try {
+
+            return $this->HomeRep->notificaciones($id, $id_usuario);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
     public function show($id)
     {
 

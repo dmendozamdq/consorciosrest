@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Usuario;
+use App\Services\DataBaseService;
 
 
 class UsuariosRepository
@@ -10,10 +11,12 @@ class UsuariosRepository
 
     private $Usuario;
     private $ID_Institucion;
+    private $dataBaseService;
 
-    function __construct(Usuario $Usuario)
+    function __construct(Usuario $Usuario, DataBaseService $dataBaseService)
     {
         $this->Usuario = $Usuario;
+        $this->dataBaseService = $dataBaseService;
     }
 
     public function getAll()
@@ -23,7 +26,7 @@ class UsuariosRepository
 
             $result = \DB::select("
                         SELECT  rf.*
-                        FROM reg_familiar rf
+                        FROM users rf
                         LEFT JOIN asociaciones a ON rf.id=a.ID_Familia
                         GROUP BY rf.ID
                         ");
@@ -40,23 +43,50 @@ class UsuariosRepository
 
         try {
             $FechaActual=date("Y-m-d");
-            $ID_Institucion=11;
+
+            /*$ID_Institucion=11;
             $result = \DB::select("
                 SELECT  rf.*, a.ID_Alumno
                 FROM reg_familiar rf
                 LEFT JOIN asociaciones a ON rf.id=a.ID_Familia
                 WHERE rf.ID={$id} and a.ID_Institucion={$ID_Institucion}
             ");
+            */
+            //$ID_Institucion=11;
+            $result = \DB::select("
+                SELECT  rf.*, a.ID_Alumno, a.ID_Institucion
+                FROM users rf
+                LEFT JOIN asociaciones a ON rf.id=a.ID_Familia
+                WHERE rf.ID={$id}
+                ");
 
             $return = array();
-            $mail_r = $result[0]->Email;
+            $mail_r = $result[0]->email;
+
+
+
+
 
             if (isset($result[0]->ID_Alumno)){
 
                 $hijos = array();
                 for ($i=0; $i < count($result); $i++) {
 
-                    $resultHijos = \DB::connection('mysql2')->select("
+                  $ID_Institucion = $result[$i]->ID_Institucion;
+                  $institucion = \DB::select("
+                      SELECT  inst.Institucion, inst.Carpeta, inst.URL, inst.Logo
+                      FROM instituciones inst
+                      WHERE inst.ID={$ID_Institucion}
+                      ");
+
+                  $Institucion = $institucion[0]->Institucion;
+                  $Carpeta = $institucion[0]->Carpeta;
+                  $URL = $institucion[0]->URL;
+                  $Logo = $institucion[0]->Logo;
+
+                  $Logo_Ubicacion=$URL.'/'.$Carpeta.'/imagenes/'.$Logo;
+
+                  $resultHijos = $this->dataBaseService->selectConexion($ID_Institucion)->select("
                                                                         SELECT a.ID, a.Nombre, a.Apellido, a.DNI
                                                                         FROM alumnos a
                                                                         WHERE id = {$result[$i]->ID_Alumno}
@@ -64,7 +94,7 @@ class UsuariosRepository
                     $ID_Alumno_Vinculado= $resultHijos[0]->ID;
                     $Novedades=0;
                     //REVISO COMUNICADOS SIN LECTURA
-                    $comunicados = \DB::connection('mysql2')->select("
+                    $comunicados = $this->dataBaseService->selectConexion($ID_Institucion)->select("
                                     SELECT cd.ID
                                     FROM comunicados_detalle cd
                                     INNER JOIN alumnos a ON cd.ID_Destinatario=a.ID
@@ -75,7 +105,7 @@ class UsuariosRepository
                     $Cant_Comunicados=count($comunicados);
                     $Novedades = $Novedades + $Cant_Comunicados;
                     //REVISO NOTIFICACIONES SIN LECTURA
-                    $comunicados = \DB::connection('mysql2')->select("
+                    $comunicados = $this->dataBaseService->selectConexion($ID_Institucion)->select("
                                     SELECT ne.ID
                                     FROM notificaciones_enviadas ne
                                     INNER JOIN alumnos a ON ne.ID_Alumno=a.ID
@@ -86,7 +116,7 @@ class UsuariosRepository
                     $Novedades = $Novedades + $Cant_Comunicados;
 
                     //REVISO CHATS SIN lectura
-                    $chats = \DB::connection('mysql2')->select("
+                    $chats = $this->dataBaseService->selectConexion($ID_Institucion)->select("
                                         SELECT chcc.ID, chcc.Codigo, chcc.ID_Familia
                                         FROM chat_codigo_conversaciones chcc
                                         WHERE chcc.ID_Alumno={$ID_Alumno_Vinculado} AND chcc.ID_Familia={$id}
@@ -100,7 +130,7 @@ class UsuariosRepository
                         for ($k=0; $k < count($chats); $k++) {
                           $ID_Chat = $chats[$k]->ID;
                           $Codigo = trim(utf8_decode($chats[$k]->Codigo));
-                          $comunicados = \DB::connection('mysql2')->select("
+                          $comunicados = $this->dataBaseService->selectConexion($ID_Institucion)->select("
                                             SELECT ch.ID
                                             FROM chat ch
                                             WHERE ch.ID_Alumno={$ID_Alumno_Vinculado} AND ch.Codigo='{$Codigo}' and ch.ID_Destinatario='{$id}' AND ch.Tipo_Destinatario=2 and ch.B=0 and ch.Leido=0 and ch.P=1
@@ -110,7 +140,7 @@ class UsuariosRepository
                       }
                     $Novedades = $Novedades + $Cantidad_Chats;
                     //REVISO PUBLICACIONES SIN LECTURA
-                    $comunicados = \DB::connection('mysql2')->select("
+                    $comunicados = $this->dataBaseService->selectConexion($ID_Institucion)->select("
                                     SELECT pd.ID
                                     FROM publicaciones_detalle pd
                                     INNER JOIN alumnos a ON pd.ID_Destinatario=a.ID
@@ -133,7 +163,11 @@ class UsuariosRepository
                             'Nombre'    => trim(utf8_decode($resultHijos[0]->Nombre)),
                             'Apellido'  => trim(utf8_decode($resultHijos[0]->Apellido)),
                             'DNI'       => $resultHijos[0]->DNI,
-                            'Novedades' => $Novedades
+                            'Novedades' => $Novedades,
+                            'id_institucion'=> $ID_Institucion,
+                            'institucion'=> $Institucion,
+                            'logo'=> $Logo_Ubicacion,
+
                         );
                     }
 
@@ -206,7 +240,7 @@ class UsuariosRepository
 
         try {
 
-            $id = $this->Usuario->where('id', $id)
+            /*$id = $this->Usuario->where('id', $id)
                                 ->update([
                                           'estado'    => "A",
                                           'nombre'    => $data["nombre"],
@@ -215,6 +249,14 @@ class UsuariosRepository
                                           'email'     => $data["email"],
                                           'fecha_mod' => date('Y-m-d H:i:s')
                                         ]);
+*/
+                                        $id = $this->Usuario->where('id', $id)
+                                        ->update([
+                                                  'estado'    => "A",
+                                                  'password'  => \Hash::make($data["password"]),
+                                                  'email'     => $data["email"]
+                                                  
+                                                ]);
 
             return $id;
 
@@ -229,9 +271,9 @@ class UsuariosRepository
         try {
 
             $result = \DB::select("
-                        UPDATE reg_familiar rf
+                        UPDATE users rf
                         SET rf.DeviceID = '{$DeviceID}'
-                        WHERE rf.Email = '{$email}'
+                        WHERE rf.email = '{$email}'
                     ");
 
             return $result;

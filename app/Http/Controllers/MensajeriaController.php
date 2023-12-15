@@ -28,7 +28,7 @@ class MensajeriaController extends Controller
 
         $data = $request->all();
 
-        $response = $this->MensajeriaService->general($id, $data['email']);
+        $response = $this->MensajeriaService->general($id, $data['email'], $data['id_institucion']);
 
         return response()->json([
             'success' => true,
@@ -41,11 +41,13 @@ class MensajeriaController extends Controller
      }
     
 
-    public function lectura_mensajeria($id)
+    public function lectura_mensajeria($id, Request $request)
     {
         //return $this->ReportesService->general($id);
 
-        $informe = $this->MensajeriaService->lectura_mensajeria($id);
+        $data = $request->all();
+
+        $informe = $this->MensajeriaService->lectura_mensajeria($id, $data['id_institucion']);
 
         return response()->json([
             'success' => true,
@@ -54,11 +56,13 @@ class MensajeriaController extends Controller
         ]);
     }
 
-    public function historial_mensajes($id)
+    public function historial_mensajes($id, Request $request)
     {
         //return $this->ReportesService->general($id);
 
-        $informe = $this->MensajeriaService->historial_mensajes($id);
+        $data = $request->all();
+
+        $informe = $this->MensajeriaService->historial_mensajes($id, $data['id_institucion']);
 
         return response()->json([
             'success' => true,
@@ -71,7 +75,12 @@ class MensajeriaController extends Controller
     {
 
         $data = $request->all();
-        return $this->MensajeriaService->enviar_chat($id, $data['chat']);
+        $informe = $this->MensajeriaService->enviar_chat($id, $data['chat'], $data['id_institucion']);
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
 
     }
 
@@ -79,15 +88,21 @@ class MensajeriaController extends Controller
     {
 
         $data = $request->all();
-        return $this->MensajeriaService->nuevo_chat($id, $data['id_alumno'], $data['email'], $data['chat']);
-
+        $informe = $this->MensajeriaService->nuevo_chat($id, $data['id_alumno'], $data['email'], $data['chat'], $data['id_institucion']);
+        return response()->json([
+            'success' => true,
+            'data'    => $informe,
+            'messages' => ''
+        ]);
     }
 
-    public function destinatarios_chats($id)
+    public function destinatarios_chats($id, Request $request)
     {
         //return $this->ReportesService->general($id);
 
-        $informe = $this->MensajeriaService->destinatarios_chats($id);
+        $data = $request->all();
+
+        $informe = $this->MensajeriaService->destinatarios_chats($id, $data['id_institucion']);
 
         return response()->json([
             'success' => true,

@@ -1,0 +1,2 @@
+Options All -Indexes
+AddHandler x-httpd-php7-4 .php

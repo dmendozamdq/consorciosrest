@@ -25,7 +25,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    /*public function login(Request $request)
     {
         $credentials = $request->only('Usuario', 'Contrasenia');
 
@@ -34,6 +34,18 @@ class AuthController extends Controller
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    */
+    public function login()
+    {
+        $credentials = request(['name', 'password']);
+        $credentials['password'] = md5($credentials['password']);
+        
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $this->respondWithToken($token);
     }
 
     /**
