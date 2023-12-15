@@ -111,7 +111,7 @@ class ConsorciosRepository
                                               'id_empresa_facturacion'=> 1
                                           );
                     $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
-                        SELECT u.ID,u.Unidad.u.Consejo.u.Orden.u.Tipo,u.Propietario,u.Direccion,u.Telefono,u.Email,l.Localidad,l.Codigo_Postal
+                        SELECT u.ID,u.Unidad,u.Consejo,u.Orden,u.Tipo,u.Propietario,u.Direccion,u.Telefono,u.Email,l.Localidad,l.Codigo_Postal
                         FROM unidades u
                         INNER JOIN localidades l ON u.ID_Localidad=l.ID
                         WHERE u.ID_Edificio=$id_edificio and u.Visible='S'
@@ -163,7 +163,7 @@ class ConsorciosRepository
             $resultado = array();
             $id_institucion = $id;
             $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
-                          SELECT u.ID,u.Unidad.u.Consejo.u.Orden.u.Tipo,u.Propietario,u.Direccion,u.Telefono,u.Email,l.Localidad,l.Codigo_Postal,e.Edificio
+                          SELECT u.ID,u.Unidad,u.Consejo,u.Orden,u.Tipo,u.Propietario,u.Direccion,u.Telefono,u.Email,l.Localidad,l.Codigo_Postal,e.Edificio
                           FROM unidades u
                           INNER JOIN localidades l ON u.ID_Localidad=l.ID
                           INNER JOIN edificios e ON u.ID_Edificio=e.ID
