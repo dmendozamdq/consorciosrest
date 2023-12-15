@@ -35,8 +35,7 @@ class HomeRepository
 
           for ($j=0; $j < count($listado); $j++)
                 {
-
-                  $id_periodo =  $listado[$j]->Id;
+                  $ID_Administracion =  $listado[$j]->ID;
                   $resultado[$j] = array(
                                               
                                               'nombre'=> trim(utf8_decode($listado[$j]->Administracion)),
