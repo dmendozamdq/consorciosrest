@@ -27,7 +27,7 @@ class ConsorciosController extends Controller
      *
      * @return Json Response [success, data, messages]
      */
-    public function ver_edicicios($id)
+    public function ver_edificios($id)
     {
         $informe = $this->ConsorciosService->ver_edificios();
 
