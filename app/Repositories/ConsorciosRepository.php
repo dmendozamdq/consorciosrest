@@ -29,7 +29,7 @@ class ConsorciosRepository
           $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
                           SELECT e.ID,e.Edificio,e.Direccion,e.CUIT,e.Encargado,e.Telefono,l.Localidad,l.Codigo_Postal
                           FROM edificios e
-                          INNER JOIN localidades l ON e.ID_Ciduad=l.ID
+                          INNER JOIN localidades l ON e.ID_Localidad=l.ID
                           WHERE e.Visible='S'
                           ORDER BY e.Edificio
                           
@@ -80,7 +80,7 @@ class ConsorciosRepository
           $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
                           SELECT e.ID,e.Edificio,e.Direccion,e.CUIT,e.Encargado,e.Telefono,l.Localidad,l.Codigo_Postal
                           FROM edificios e
-                          INNER JOIN localidades l ON e.ID_Ciduad=l.ID
+                          INNER JOIN localidades l ON e.ID_Localidad=l.ID
                           WHERE e.ID=$id_edificio
                           
                       ");
