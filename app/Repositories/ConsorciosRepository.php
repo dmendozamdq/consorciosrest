@@ -98,7 +98,7 @@ class ConsorciosRepository
 
                   $resultado[$j] = array(
                                               
-                                            'id'=> $ID_Edificio,                          
+                                            'id'=> $id_edificio,                          
                                             'edificio'=> trim(utf8_decode($listado[$j]->Edificio)),
                                               'direccion'=> trim(utf8_decode($listado[$j]->Direccion)),
                                               'telefono'=> trim(utf8_decode($listado[$j]->Telefono)),
