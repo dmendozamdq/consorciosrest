@@ -58,7 +58,8 @@ class ConsorciosRepository
                                               'encargado'=> trim(utf8_decode($listado[$j]->Encargado)),
                                               'cantidad_periodos'=> 12,
                                               'ultima_liquidacion'=> '27/11/2023',
-                                              'id_empresa_facturacion'=> 1
+                                              'id_empresa_facturacion'=> 1,
+                                              'total_unidades'=> $Cantidad_Unidades
                                           );
                     
                 }
@@ -108,7 +109,8 @@ class ConsorciosRepository
                                               'encargado'=> trim(utf8_decode($listado[$j]->Encargado)),
                                               'cantidad_periodos'=> 12,
                                               'ultima_liquidacion'=> '27/11/2023',
-                                              'id_empresa_facturacion'=> 1
+                                              'id_empresa_facturacion'=> 1,
+                                              'total_unidades'=> $Cantidad_Unidades
                                           );
                     $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
                         SELECT u.ID,u.Unidad,u.Consejo,u.Orden,u.Tipo,u.Propietario,u.Direccion,u.Telefono,u.Email,l.Localidad,l.Codigo_Postal
