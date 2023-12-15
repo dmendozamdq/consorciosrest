@@ -29,7 +29,7 @@ class ConsorciosController extends Controller
      */
     public function ver_edificios($id)
     {
-        $informe = $this->ConsorciosService->ver_edificios();
+        $informe = $this->ConsorciosService->ver_edificios($id);
 
         return response()->json([
             'success' => true,
