@@ -18,6 +18,41 @@ class HomeRepository
         $this->dataBaseService = $dataBaseService;
     }
 
+
+    public function administracion($id)
+        {
+          date_default_timezone_set('America/Argentina/Buenos_Aires');
+          $FechaActual=date("Y-m-d");
+          $HoraActual=date("H:i:s");
+          $resultado = array();
+          $id_institucion = $id;
+          $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
+                          SELECT a.ID,a.Administracion,a.Direccion,a.Telefono,a.Logotipo,a.Email
+                          FROM administraciones a
+                          WHERE a.ID=1
+                          
+                      ");
+
+          for ($j=0; $j < count($listado); $j++)
+                {
+
+                  $id_periodo =  $listado[$j]->Id;
+                  $resultado[$j] = array(
+                                              
+                                              'nombre'=> trim(utf8_decode($listado[$j]->Administracion)),
+                                              'direccion'=> trim(utf8_decode($listado[$j]->Direccion)),
+                                              'telefono'=> trim(utf8_decode($listado[$j]->Telefono)),
+                                              'mail'=> trim(utf8_decode($listado[$j]->Email)),
+                                              'logo'=> trim(utf8_decode($listado[$j]->Logotipo))
+
+                                          );
+                    
+  
+                }
+          return $resultado;
+
+        }
+
     /*public function lectura_comunicado($id)
     {
       $FechaActual=date("Y-m-d");

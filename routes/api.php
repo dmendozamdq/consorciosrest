@@ -50,6 +50,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('user/me', 'AuthController@me'); //NO PONER ID_INSTITUCION
 
 
+
+
+    //DATOS ADMINISTRACION
+    Route::get('home/administracion/{id}', 'HomeController@administracion');
+
+
     //Ruteo de Comunicados
     Route::post('comunicados/{id}', 'ComunicadosController@general');
     //Ruteo de la lectura de Comunicados

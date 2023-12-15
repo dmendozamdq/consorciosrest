@@ -14,7 +14,16 @@ class HomeService
         $this->HomeRep = $HomeRep;
     }
 
-   
+    public function administracion($id)
+    {
+        try {
+
+            return $this->HomeRep->administracion($id);
+
+        } catch (Exception $e) {
+
+        }
+    }
 
     public function total_facturado($id, $filtro)
     {

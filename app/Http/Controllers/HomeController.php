@@ -24,7 +24,17 @@ class HomeController extends Controller
      * @return Json Response [success, data, messages]
      */
     
-
+     public function administracion($id)
+     {
+         //return $this->ReportesService->general($id);
+         $data =  $this->HomeService->administracion($id);
+         return response()->json([
+             'success' => true,
+             'data'    => mb_convert_encoding($data, 'UTF-8', 'UTF-8'),
+             'messages' => ''
+         ]);
+         //return $this->ConceptosService->mostrar_conceptos($data);
+     }
     
     public function total_facturado($id, Request $request)
     {
