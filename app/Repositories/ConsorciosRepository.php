@@ -105,7 +105,7 @@ class ConsorciosRepository
                                               'telefono'=> trim(utf8_decode($listado[$j]->Telefono)),
                                               'localidad'=> trim(utf8_decode($listado[$j]->Localidad)),
                                               'codigo_postal'=> $listado[$j]->Codigo_Postal,
-                                              'cuit'=> $listado[$j]->CUIT,
+                                              //'cuit'=> $listado[$j]->CUIT,
                                               'encargado'=> trim(utf8_decode($listado[$j]->Encargado)),
                                               'cantidad_periodos'=> 12,
                                               'ultima_liquidacion'=> '27/11/2023',
