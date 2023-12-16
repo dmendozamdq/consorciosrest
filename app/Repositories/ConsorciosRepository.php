@@ -79,9 +79,9 @@ class ConsorciosRepository
           $resultado = array();
           $id_institucion = $id;
           $listado = $this->dataBaseService->selectConexion($id_institucion)->select("
-                          SELECT e.ID,e.Edificio,e.Direccion,e.CUIT,e.Encargado,e.Telefono,l.Localidad,l.Codigo_Postal
-                          FROM edificios e
-                          INNER JOIN localidades l ON e.ID_Localidad=l.ID
+                            SELECT e.ID,e.Edificio,e.Direccion,e.CUIT,e.Encargado,e.Telefono,l.Localidad,l.Codigo_Postal
+                            FROM edificios e
+                            INNER JOIN localidades l ON e.ID_Localidad=l.ID
                           WHERE e.ID=$id_edificio
                           
                       ");
@@ -100,12 +100,12 @@ class ConsorciosRepository
                   $resultado[$j] = array(
                                               
                                             'id'=> $id_edificio,                          
-                                            //'edificio'=> trim(utf8_decode($listado[$j]->Edificio)),
+                                            'edificio'=> trim(utf8_decode($listado[$j]->Edificio)),
                                               'direccion'=> trim(utf8_decode($listado[$j]->Direccion)),
                                               'telefono'=> trim(utf8_decode($listado[$j]->Telefono)),
                                               'localidad'=> trim(utf8_decode($listado[$j]->Localidad)),
                                               'codigo_postal'=> $listado[$j]->Codigo_Postal,
-                                              //'cuit'=> $listado[$j]->CUIT,
+                                              'cuit'=> $listado[$j]->CUIT,
                                               'encargado'=> trim(utf8_decode($listado[$j]->Encargado)),
                                               'cantidad_periodos'=> 12,
                                               'ultima_liquidacion'=> '27/11/2023',
