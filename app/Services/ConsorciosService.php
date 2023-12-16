@@ -24,11 +24,11 @@ class ConsorciosService
 
         }
     }
-    public function ver_unidades($id, $id_edificio)
+    public function ver_unidades($id,$id_edificio)
     {
         try {
 
-            return $this->ConsorciosRep->ver_unidades($id, $id_edificio);
+            return $this->ConsorciosRep->ver_unidades($id,$id_edificio);
 
         } catch (Exception $e) {
 

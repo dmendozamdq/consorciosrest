@@ -69,7 +69,7 @@ class ConsorciosRepository
 
 
 
-    public function ver_unidades($id, $id_edificio)
+    public function ver_unidades($id,$id_edificio)
     {
 
         try {
@@ -85,21 +85,19 @@ class ConsorciosRepository
                           WHERE e.ID=$id_edificio
                           
                       ");
-
+            $cuenta_unidades = $this->dataBaseService->selectConexion($id_institucion)->select("
+            SELECT u.ID
+            FROM unidades u
+            WHERE u.Visible='S' and u.ID_Edificio=$id_edificio
+            
+                 ");
+          $Cantidad_Unidades=count($cuenta_unidades);
           for ($j=0; $j < count($listado); $j++)
                 {
-                  
-                  $cuenta_unidades = $this->dataBaseService->selectConexion($id_institucion)->select("
-                          SELECT u.ID
-                          FROM unidades u
-                          WHERE u.Visible='S' and u.ID_Edificio=$id_edificio
-                          
-                      ");
-                    $Cantidad_Unidades=count($cuenta_unidades);
 
                   $resultado[$j] = array(
                                               
-                                            'id'=> $id_edificio,                          
+                                            'id'=> $listado[$j]->ID,                        
                                             'edificio'=> trim(utf8_decode($listado[$j]->Edificio)),
                                               'direccion'=> trim(utf8_decode($listado[$j]->Direccion)),
                                               'telefono'=> trim(utf8_decode($listado[$j]->Telefono)),
